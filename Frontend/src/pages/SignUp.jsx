@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { signup } from '../api/auth';
+import { login } from '../store/userSlice';
+import { signup as signupApi } from '../api/auth';
 
 function SignUp() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -24,12 +27,13 @@ function SignUp() {
     }
 
     try {
-      const response = await signup({
+      const response = await signupApi({
         username: formData.username,
         password: formData.password,
         phone: formData.phone
       });
       localStorage.setItem('token', response.token);
+      dispatch(login(formData.username));
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (err) {

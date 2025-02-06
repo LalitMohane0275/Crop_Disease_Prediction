@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { login } from '../api/auth';
+import { login as loginAction } from '../store/userSlice';
+import { login as loginApi } from '../api/auth';
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -16,8 +19,9 @@ function Login() {
     setIsLoading(true);
     
     try {
-      const response = await login(formData.username, formData.password);
+      const response = await loginApi(formData.username, formData.password);
       localStorage.setItem('token', response.token);
+      dispatch(loginAction(formData.username));
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (err) {
